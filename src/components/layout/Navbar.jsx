@@ -1,5 +1,5 @@
-import { Bell, Search } from 'lucide-react'
-import { useStore } from '../../store/useStore'
+import { Bell } from 'lucide-react'
+import { useStore } from "../../store/useStore";
 
 export default function Navbar({ title, subtitle, action }) {
   const members = useStore((s) => s.members)
@@ -19,21 +19,33 @@ export default function Navbar({ title, subtitle, action }) {
       zIndex: 10,
     }}>
       <div>
-        <h1 style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>{title}</h1>
-        {subtitle && <p style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 2 }}>{subtitle}</p>}
+        <h1 style={{ fontSize: 20, fontWeight: 800 }}>{title}</h1>
+        {subtitle && <p style={{ fontSize: 12 }}>{subtitle}</p>}
       </div>
+
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         {action}
+
         <button style={{
-          width: 36, height: 36, borderRadius: 9,
-          background: 'var(--bg-elevated)',
-          border: '1px solid var(--border)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          cursor: 'pointer', color: 'var(--text-secondary)',
+          width: 36,
+          height: 36,
+          borderRadius: 9,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
         }}>
           <Bell size={15} />
         </button>
-        <div className="avatar" style={{ width: 36, height: 36, background: me?.bg, color: me?.color, fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
+
+        <div
+          className="avatar"
+          style={{
+            width: 36,
+            height: 36,
+            background: me?.bg,
+            color: me?.color,
+          }}
+        >
           {me?.initials}
         </div>
       </div>
