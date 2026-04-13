@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useStore } from '../store/useStore'
+import { useStore } from "../../store/useStore";
 import Navbar from '../components/layout/Navbar'
 import { UserPlus, Trash2, X, User } from 'lucide-react'
 
