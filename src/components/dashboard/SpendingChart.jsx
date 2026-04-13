@@ -14,7 +14,8 @@ const CustomTooltip = ({ active, payload }) => {
 }
 
 export default function SpendingChart() {
-  const data = useStore((s) => s.getSpendingByCategory())
+  const getSpendingByCategory = useStore((s) => s.getSpendingByCategory)
+  const data = getSpendingByCategory()
 
   return (
     <div style={{ width: '100%', height: 200 }}>

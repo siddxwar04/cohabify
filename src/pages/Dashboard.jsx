@@ -4,7 +4,6 @@ import { useStore } from '../store/useStore'
 import Navbar from '../components/layout/Navbar'
 import AddExpenseModal from '../components/expenses/AddExpenseModal'
 import SpendingChart from '../components/dashboard/SpendingChart'
-import ActivityFeed from '../components/dashboard/ActivityFeed'
 import { useState } from 'react'
 import { format } from 'date-fns'
 
