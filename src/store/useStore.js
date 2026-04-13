@@ -11,7 +11,7 @@ const COLOR_PALETTE = [
   { color: '#E879A0', bg: 'rgba(232,121,160,0.15)' },
 ]
 
-// ── DEFAULT MEMBERS (UI NOT EMPTY) ────────────
+// ── DEFAULT MEMBERS ───────────────────────────
 const DEFAULT_MEMBERS = [
   {
     id: 'm1',
@@ -46,14 +46,12 @@ export const useStore = create(
       currentUser: 'm1',
 
       // ── MEMBERS ─────────────────────────────
-
       addMember: (name) => {
         if (!name || !name.trim()) return
 
         const { members } = get()
         const cleanName = name.trim()
 
-        // ❌ prevent duplicate
         if (members.some(m => m.name.toLowerCase() === cleanName.toLowerCase())) return
 
         const parts = cleanName.split(' ').filter(Boolean)
@@ -83,7 +81,6 @@ export const useStore = create(
 
       deleteMember: (id) =>
         set((s) => {
-          // ❗ prevent deleting last member
           if (s.members.length <= 1) return s
 
           const remainingMembers = s.members.filter((m) => m.id !== id)
@@ -91,7 +88,6 @@ export const useStore = create(
           return {
             members: remainingMembers,
 
-            // clean expenses
             expenses: s.expenses
               .filter((e) => e.paidBy !== id)
               .map((e) => ({
@@ -100,7 +96,6 @@ export const useStore = create(
               }))
               .filter((e) => e.splitWith.length > 0),
 
-            // reassign chores
             chores: s.chores.map((c) => {
               if (c.assignedTo === id) {
                 return {
@@ -117,6 +112,59 @@ export const useStore = create(
             }),
           }
         }),
+
+      // ── COMPUTED ─────────────────────────────
+
+      getBalances: () => {
+        const { members, expenses } = get()
+        const balances = {}
+
+        members.forEach((m) => {
+          balances[m.id] = 0
+        })
+
+        expenses.forEach((exp) => {
+          const share = exp.amount / exp.splitWith.length
+
+          exp.splitWith.forEach((mid) => {
+            if (mid !== exp.paidBy) {
+              balances[exp.paidBy] += share
+              balances[mid] -= share
+            }
+          })
+        })
+
+        return balances
+      },
+
+      getSettlements: () => {
+        const { members } = get()
+        const balances = get().getBalances()
+
+        const debtors = members.filter(m => balances[m.id] < 0)
+        const creditors = members.filter(m => balances[m.id] > 0)
+
+        const result = []
+
+        debtors.forEach(d => {
+          let debt = -balances[d.id]
+
+          creditors.forEach(c => {
+            if (debt === 0) return
+
+            const credit = balances[c.id]
+            const pay = Math.min(debt, credit)
+
+            if (pay > 0) {
+              result.push({ from: d.id, to: c.id, amount: Math.round(pay) })
+              balances[c.id] -= pay
+              debt -= pay
+            }
+          })
+        })
+
+        return result
+      },
     }),
     {
       name: 'cohabify-storage',
