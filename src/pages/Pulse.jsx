@@ -19,10 +19,10 @@ export default function Pulse() {
   const currentUser = useStore((s) => s.currentUser)
   const presence = useStore((s) => s.presence)
   const vibes = useStore((s) => s.vibes)
-  const guests = useStore((s) => s.guests)
+  const guests = useStore((s) => s.guests) || []
   const dinner = useStore((s) => s.dinner)
-  const quietHours = useStore((s) => s.quietHours)
-  const recurring = useStore((s) => s.recurring)
+  const quietHours = useStore((s) => s.quietHours) || { start: 23, end: 7 }
+  const recurring = useStore((s) => s.recurring) || []
   const cyclePresence = useStore((s) => s.cyclePresence)
   const setVibe = useStore((s) => s.setVibe)
   const setDinner = useStore((s) => s.setDinner)

@@ -25,8 +25,10 @@ export default function Members() {
 
   const submit = () => {
     if (!name.trim() || name.trim().length < 2) return setError('Give them a real name.')
-    addMember(name)
+    const ok = addMember(name)
+    if (!ok) return setError('That name is already in the house.')
     setName('')
+    setError('')
     setShowAdd(false)
   }
 

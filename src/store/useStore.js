@@ -61,31 +61,31 @@ export const useStore = create(
       addGuest: ({ who, note, by }) => {
         if (!who?.trim()) return
         set((s) => ({
-          guests: [{ id: `g${Date.now()}`, who: who.trim(), note: note.trim(), by, night: 'Tonight' }, ...s.guests],
+          guests: [{ id: `g${Date.now()}`, who: who.trim(), note: (note || '').trim(), by, night: 'Tonight' }, ...(s.guests || [])],
         }))
         const host = get().members.find((m) => m.id === by)
         get().pushActivity(`${host?.name || 'Someone'} logged guests: ${who.trim()}`, 'clay')
       },
 
-      removeGuest: (id) => set((s) => ({ guests: s.guests.filter((g) => g.id !== id) })),
+      removeGuest: (id) => set((s) => ({ guests: (s.guests || []).filter((g) => g.id !== id) })),
 
       addPantryItem: ({ name, qty, addedBy }) => {
         if (!name?.trim()) return
         set((s) => ({
-          pantry: [{ id: `pan${Date.now()}`, name: name.trim(), qty: qty.trim() || '1', addedBy, bought: false }, ...s.pantry],
+          pantry: [{ id: `pan${Date.now()}`, name: name.trim(), qty: (qty || '').trim() || '1', addedBy, bought: false }, ...(s.pantry || [])],
         }))
       },
 
       togglePantryItem: (id) =>
         set((s) => ({
-          pantry: s.pantry.map((i) => (i.id === id ? { ...i, bought: !i.bought } : i)),
+          pantry: (s.pantry || []).map((i) => (i.id === id ? { ...i, bought: !i.bought } : i)),
         })),
 
-      deletePantryItem: (id) => set((s) => ({ pantry: s.pantry.filter((i) => i.id !== id) })),
+      deletePantryItem: (id) => set((s) => ({ pantry: (s.pantry || []).filter((i) => i.id !== id) })),
 
       checkoutPantry: ({ paidBy, amount }) => {
-        const open = get().pantry.filter((i) => !i.bought)
-        if (!open.length || !amount) return
+        const open = (get().pantry || []).filter((i) => !i.bought)
+        if (!open.length || !Number(amount) || Number(amount) <= 0) return false
         get().addExpense({
           title: `Pantry run · ${open.map((i) => i.name).slice(0, 3).join(', ')}${open.length > 3 ? '…' : ''}`,
           amount,
@@ -94,8 +94,9 @@ export const useStore = create(
           category: 'Groceries',
           emoji: '🛒',
         })
-        set((s) => ({ pantry: s.pantry.map((i) => ({ ...i, bought: true })) }))
+        set((s) => ({ pantry: (s.pantry || []).map((i) => ({ ...i, bought: true })) }))
         get().showToast('Pantry run landed in the ledger.')
+        return true
       },
 
       sendNudge: (fromId, toId, amount) => {
@@ -115,19 +116,19 @@ export const useStore = create(
 
       markNotificationsRead: () =>
         set((s) => ({
-          notifications: s.notifications.map((n) => ({ ...n, unread: false })),
+          notifications: (s.notifications || []).map((n) => ({ ...n, unread: false })),
         })),
 
       pushActivity: (text, tone = 'forest') =>
         set((s) => ({
-          activity: [{ id: `a${Date.now()}`, text, time: 'Just now', tone }, ...s.activity].slice(0, 12),
+          activity: [{ id: `a${Date.now()}`, text, time: 'Just now', tone }, ...(s.activity || [])].slice(0, 12),
         })),
 
       addMember: (name) => {
-        if (!name?.trim()) return
+        if (!name?.trim()) return false
         const { members } = get()
         const cleanName = name.trim()
-        if (members.some((m) => m.name.toLowerCase() === cleanName.toLowerCase())) return
+        if (members.some((m) => m.name.toLowerCase() === cleanName.toLowerCase())) return false
 
         const used = members.map((m) => m.color)
         const palette = PALETTE.find((p) => !used.includes(p.color)) || PALETTE[members.length % PALETTE.length]
@@ -146,6 +147,7 @@ export const useStore = create(
           vibes: { ...s.vibes, [newMember.id]: 'good' },
         }))
         get().pushActivity(`${cleanName} joined Casa Verde`)
+        return true
       },
 
       deleteMember: (id) =>
@@ -165,8 +167,8 @@ export const useStore = create(
                 : c
             ),
             payments: s.payments.filter((p) => p.from !== id && p.to !== id),
-            guests: s.guests.filter((g) => g.by !== id),
-            pantry: s.pantry.filter((p) => p.addedBy !== id),
+            guests: (s.guests || []).filter((g) => g.by !== id),
+            pantry: (s.pantry || []).filter((p) => p.addedBy !== id),
           }
         }),
 
@@ -236,7 +238,7 @@ export const useStore = create(
         const balances = {}
         members.forEach((m) => { balances[m.id] = 0 })
 
-        expenses.forEach((exp) => {
+        ;(expenses || []).forEach((exp) => {
           if (!exp.splitWith?.length) return
           const share = exp.amount / exp.splitWith.length
           exp.splitWith.forEach((mid) => {
@@ -247,7 +249,7 @@ export const useStore = create(
           })
         })
 
-        payments.forEach((p) => {
+        ;(payments || []).forEach((p) => {
           balances[p.from] = (balances[p.from] || 0) + p.amount
           balances[p.to] = (balances[p.to] || 0) - p.amount
         })
@@ -310,7 +312,7 @@ export const useStore = create(
       },
 
       getFairness: () => {
-        const { members, expenses, chores, vibes } = get()
+        const { members, expenses = [], chores = [], vibes } = get()
         const paid = {}
         members.forEach((m) => { paid[m.id] = 0 })
         expenses.forEach((e) => { paid[e.paidBy] = (paid[e.paidBy] || 0) + e.amount })
@@ -353,6 +355,28 @@ export const useStore = create(
         dinner: persisted.dinner || DEFAULT_DINNER,
         toast: null,
       }),
+      merge: (persisted, current) => {
+        const p = persisted || {}
+        const arr = (value, fallback) => (Array.isArray(value) ? value : fallback)
+        return {
+          ...current,
+          ...p,
+          members: arr(p.members, current.members),
+          expenses: arr(p.expenses, current.expenses),
+          chores: arr(p.chores, current.chores),
+          payments: arr(p.payments, current.payments),
+          activity: arr(p.activity, current.activity),
+          notifications: arr(p.notifications, current.notifications),
+          presence: p.presence || current.presence,
+          vibes: p.vibes || current.vibes,
+          guests: arr(p.guests, current.guests),
+          pantry: arr(p.pantry, current.pantry),
+          recurring: arr(p.recurring, current.recurring),
+          quietHours: p.quietHours || current.quietHours,
+          dinner: p.dinner || current.dinner,
+          toast: null,
+        }
+      },
     }
   )
 )

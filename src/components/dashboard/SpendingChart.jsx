@@ -14,8 +14,11 @@ const CustomTooltip = ({ active, payload }) => {
 }
 
 export default function SpendingChart() {
-  const data = useStore((s) => s.getSpendingByCategory())
+  const expenses = useStore((s) => s.expenses)
+  const getSpendingByCategory = useStore((s) => s.getSpendingByCategory)
+  const data = getSpendingByCategory()
   const total = data.reduce((s, d) => s + d.value, 0)
+  void expenses
 
   return (
     <div className="flex items-center gap-4">

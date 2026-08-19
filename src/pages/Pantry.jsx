@@ -9,7 +9,7 @@ import { firstName } from '../lib/format'
 
 export default function Pantry() {
   const { onMenu } = useOutletContext() || {}
-  const pantry = useStore((s) => s.pantry)
+  const pantry = useStore((s) => s.pantry) || []
   const members = useStore((s) => s.members)
   const currentUser = useStore((s) => s.currentUser)
   const addPantryItem = useStore((s) => s.addPantryItem)
@@ -22,6 +22,7 @@ export default function Pantry() {
   const [checkout, setCheckout] = useState(false)
   const [amount, setAmount] = useState('')
   const [paidBy, setPaidBy] = useState(currentUser)
+  const [checkoutError, setCheckoutError] = useState('')
 
   const open = pantry.filter((i) => !i.bought)
   const got = pantry.filter((i) => i.bought)
@@ -94,7 +95,8 @@ export default function Pantry() {
         <Modal title="Turn list into a bill" subtitle={`${open.length} items · split across the house`} onClose={() => setCheckout(false)}>
           <p className="text-sm text-stone mb-3">{open.map((i) => i.name).join(', ')}</p>
           <label className="text-[11px] uppercase tracking-[0.14em] text-mist font-semibold">What did it cost?</label>
-          <input className="input mt-1.5" type="number" placeholder="₹ amount" value={amount} onChange={(e) => setAmount(e.target.value)} />
+          <input className="input mt-1.5" type="number" placeholder="₹ amount" value={amount} onChange={(e) => { setAmount(e.target.value); setCheckoutError('') }} />
+          {checkoutError && <p className="text-sm text-red-700 mt-2">{checkoutError}</p>}
           <label className="text-[11px] uppercase tracking-[0.14em] text-mist font-semibold mt-4 block">Who paid</label>
           <select className="input mt-1.5" value={paidBy} onChange={(e) => setPaidBy(e.target.value)}>
             {members.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
@@ -104,9 +106,11 @@ export default function Pantry() {
             <button
               className="btn-primary flex-[2]"
               onClick={() => {
-                checkoutPantry({ paidBy, amount: Number(amount) })
+                const ok = checkoutPantry({ paidBy, amount: Number(amount) })
+                if (!ok) return setCheckoutError('Enter what the run cost.')
                 setCheckout(false)
                 setAmount('')
+                setCheckoutError('')
               }}
             >
               Add to ledger

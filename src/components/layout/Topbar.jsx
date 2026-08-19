@@ -10,7 +10,7 @@ export default function Topbar({ title, kicker, action, onMenu }) {
   const members = useStore((s) => s.members)
   const currentUser = useStore((s) => s.currentUser)
   const setCurrentUser = useStore((s) => s.setCurrentUser)
-  const notifications = useStore((s) => s.notifications)
+  const notifications = useStore((s) => s.notifications) || []
   const markNotificationsRead = useStore((s) => s.markNotificationsRead)
   const me = members.find((m) => m.id === currentUser)
   const unread = notifications.filter((n) => n.unread).length

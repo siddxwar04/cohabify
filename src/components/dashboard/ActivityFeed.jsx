@@ -1,7 +1,7 @@
 import { useStore } from '../../store/useStore'
 
 export default function ActivityFeed() {
-  const activity = useStore((s) => s.activity)
+  const activity = useStore((s) => s.activity) || []
 
   return (
     <div className="space-y-0">

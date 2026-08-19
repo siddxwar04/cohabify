@@ -24,7 +24,7 @@ export default function Dashboard() {
   const getBalances = useStore((s) => s.getBalances)
   const getTotalThisMonth = useStore((s) => s.getTotalThisMonth)
   const toggleChore = useStore((s) => s.toggleChore)
-  const quietHours = useStore((s) => s.quietHours)
+  const quietHours = useStore((s) => s.quietHours) || { start: 23, end: 7 }
   const presence = useStore((s) => s.presence)
   const getFairness = useStore((s) => s.getFairness)
   const vibes = useStore((s) => s.vibes)
