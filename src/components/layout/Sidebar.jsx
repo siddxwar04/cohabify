@@ -1,109 +1,145 @@
-import { NavLink, useLocation } from 'react-router-dom'
-import { LayoutDashboard, Receipt, CheckSquare, ArrowLeftRight, Users, Wallet } from 'lucide-react'
+import { NavLink, useNavigate } from 'react-router-dom'
+import {
+  LayoutDashboard,
+  Receipt,
+  CheckSquare,
+  ArrowLeftRight,
+  Users,
+  Home,
+  LogOut,
+  Menu,
+  X,
+  Radio,
+  ShoppingBag,
+} from 'lucide-react'
 import { useStore } from '../../store/useStore'
+import { HOUSE } from '../../data/seed'
+import Avatar from '../ui/Avatar'
 
 const NAV = [
-  { to: '/',           icon: LayoutDashboard, label: 'Dashboard'  },
-  { to: '/expenses',   icon: Receipt,         label: 'Expenses'   },
-  { to: '/chores',     icon: CheckSquare,     label: 'Chores'     },
-  { to: '/settlement', icon: ArrowLeftRight,  label: 'Settle Up'  },
-  { to: '/members',    icon: Users,           label: 'Members'    },
+  { to: '/app', icon: LayoutDashboard, label: 'Home', end: true },
+  { to: '/app/expenses', icon: Receipt, label: 'Ledger' },
+  { to: '/app/chores', icon: CheckSquare, label: 'Housework' },
+  { to: '/app/pulse', icon: Radio, label: 'Pulse' },
+  { to: '/app/pantry', icon: ShoppingBag, label: 'Pantry' },
+  { to: '/app/settle', icon: ArrowLeftRight, label: 'Settle up' },
+  { to: '/app/members', icon: Users, label: 'Household' },
 ]
 
-export default function Sidebar() {
+export default function Sidebar({ open, onClose }) {
   const members = useStore((s) => s.members)
   const currentUser = useStore((s) => s.currentUser)
   const me = members.find((m) => m.id === currentUser)
+  const navigate = useNavigate()
 
-  return (
-    <aside style={{
-      width: 230,
-      background: 'var(--bg-surface)',
-      borderRight: '1px solid var(--border)',
-      display: 'flex',
-      flexDirection: 'column',
-      flexShrink: 0,
-      height: '100vh',
-      position: 'sticky',
-      top: 0,
-    }}>
-      {/* Logo */}
-      <div style={{ padding: '24px 20px 20px', display: 'flex', alignItems: 'center', gap: 10 }}>
-        <div style={{
-          width: 32, height: 32, borderRadius: 9,
-          background: 'var(--accent)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>
-          <Wallet size={16} color="#fff" />
-        </div>
-        <span style={{ fontSize: 17, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
-          CoHab<span style={{ color: 'var(--accent)' }}>ify</span>
-        </span>
+  const body = (
+    <>
+      <div className="px-5 pt-6 pb-4">
+        <NavLink to="/" className="flex items-center gap-2.5 no-underline">
+          <div className="w-9 h-9 rounded-2xl bg-forest text-cream flex items-center justify-center shadow-card">
+            <Home size={16} />
+          </div>
+          <div>
+            <p className="font-display text-[22px] leading-none text-espresso">
+              CoHab<span className="italic text-forest">ify</span>
+            </p>
+            <p className="text-[10px] uppercase tracking-[0.18em] text-mist mt-1">Casa Verde</p>
+          </div>
+        </NavLink>
       </div>
 
-      {/* Flat info */}
-      <div style={{ padding: '0 20px 20px' }}>
-        <div style={{
-          background: 'var(--accent-glow)',
-          border: '1px solid rgba(29,158,117,0.2)',
-          borderRadius: 10,
-          padding: '10px 14px',
-        }}>
-          <p style={{ fontSize: 10, color: 'var(--accent)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 4 }}>Your Home</p>
-          <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>Flat 4B, Koramangala</p>
-          <p style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 2 }}>Powered by CoHabify</p>
+      <div className="px-4 mb-5">
+        <div className="relative overflow-hidden rounded-3xl border border-linen shadow-card">
+          <img src={HOUSE.photo} alt={HOUSE.name} className="h-28 w-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-espresso/80 via-espresso/20 to-transparent" />
+          <div className="absolute bottom-3 left-3 right-3 text-cream">
+            <p className="text-[10px] uppercase tracking-[0.16em] text-cream/70">Your home</p>
+            <p className="font-display text-xl leading-none mt-0.5">{HOUSE.name}</p>
+            <p className="text-[11px] mt-1 text-cream/80">{HOUSE.unit} · {HOUSE.city}</p>
+          </div>
         </div>
       </div>
 
-      <div style={{ padding: '0 12px 8px' }}>
-        <p style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', padding: '0 8px 8px' }}>Menu</p>
-        <nav style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          {NAV.map(({ to, icon: Icon, label }) => (
-            <NavLink
-              key={to}
-              to={to}
-              end={to === '/'}
-              style={({ isActive }) => ({
-                display: 'flex',
-                alignItems: 'center',
-                gap: 10,
-                padding: '10px 12px',
-                borderRadius: 9,
-                fontSize: 13,
-                fontWeight: 600,
-                textDecoration: 'none',
-                color: isActive ? '#fff' : 'var(--text-secondary)',
-                background: isActive ? 'var(--accent)' : 'transparent',
-                transition: 'all 0.15s',
-              })}
-              onMouseEnter={(e) => { if (!e.currentTarget.classList.contains('active')) { e.currentTarget.style.background = 'var(--bg-elevated)'; e.currentTarget.style.color = 'var(--text-primary)' } }}
-              onMouseLeave={(e) => { if (e.currentTarget.getAttribute('aria-current') !== 'page') { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-secondary)' } }}
-            >
-              <Icon size={16} />
-              {label}
-            </NavLink>
-          ))}
-        </nav>
-      </div>
+      <nav className="px-3 flex flex-col gap-1">
+        {NAV.map(({ to, icon: Icon, label, end }) => (
+          <NavLink
+            key={to}
+            to={to}
+            end={end}
+            onClick={onClose}
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-sm font-medium no-underline transition ${
+                isActive
+                  ? 'bg-espresso text-cream shadow-card'
+                  : 'text-stone hover:bg-linen/70 hover:text-espresso'
+              }`
+            }
+          >
+            <Icon size={16} />
+            {label}
+          </NavLink>
+        ))}
+      </nav>
 
-      {/* Spacer */}
-      <div style={{ flex: 1 }} />
-
-      {/* Members */}
-      <div style={{ padding: '16px 20px', borderTop: '1px solid var(--border)' }}>
-        <p style={{ fontSize: 10, color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 10 }}>Flatmates</p>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <div className="mt-auto px-4 py-4">
+        <p className="text-[10px] uppercase tracking-[0.18em] text-mist px-1 mb-3">In the house</p>
+        <div className="flex flex-col gap-2">
           {members.map((m) => (
-            <div key={m.id} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div className="avatar" style={{ width: 28, height: 28, background: m.bg, color: m.color, fontSize: 10 }}>{m.initials}</div>
-              <div>
-                <p style={{ fontSize: 12, fontWeight: 600, color: m.id === currentUser ? 'var(--text-primary)' : 'var(--text-secondary)' }}>{m.name.split(' ')[0]}</p>
-                {m.id === currentUser && <p style={{ fontSize: 10, color: 'var(--accent)' }}>You</p>}
+            <div key={m.id} className="flex items-center gap-2.5">
+              <Avatar member={m} size={28} />
+              <div className="min-w-0">
+                <p className={`text-xs font-semibold truncate ${m.id === currentUser ? 'text-espresso' : 'text-stone'}`}>
+                  {m.name}
+                </p>
+                {m.id === currentUser && <p className="text-[10px] text-forest">You</p>}
               </div>
             </div>
           ))}
         </div>
+
+        <button
+          onClick={() => navigate('/')}
+          className="mt-5 w-full flex items-center justify-center gap-2 text-xs font-medium text-stone hover:text-espresso py-2"
+        >
+          <LogOut size={13} /> Back to site
+        </button>
+
+        <div className="mt-2 flex items-center gap-2.5 rounded-2xl bg-paper border border-linen px-3 py-2.5">
+          <Avatar member={me} size={32} />
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-espresso truncate">{me?.name}</p>
+            <p className="text-[11px] text-mist">{me?.role}</p>
+          </div>
+        </div>
       </div>
-    </aside>
+    </>
+  )
+
+  return (
+    <>
+      <aside className="hidden lg:flex w-[272px] shrink-0 flex-col bg-cream/80 border-r border-linen h-screen sticky top-0 overflow-y-auto">
+        {body}
+      </aside>
+
+      {open && (
+        <div className="lg:hidden fixed inset-0 z-40">
+          <div className="absolute inset-0 bg-espresso/40" onClick={onClose} />
+          <aside className="relative w-[280px] h-full bg-cream flex flex-col shadow-lift">
+            <button onClick={onClose} className="absolute top-4 right-4 w-8 h-8 rounded-full bg-paper border border-linen flex items-center justify-center">
+              <X size={14} />
+            </button>
+            {body}
+          </aside>
+        </div>
+      )}
+    </>
+  )
+}
+
+export function MenuButton({ onClick }) {
+  return (
+    <button onClick={onClick} className="lg:hidden w-10 h-10 rounded-2xl border border-linen bg-cream flex items-center justify-center">
+      <Menu size={18} />
+    </button>
   )
 }

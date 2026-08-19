@@ -1,110 +1,110 @@
-import { useState } from 'react'
-import { Plus, Trash2, Filter } from 'lucide-react'
+import { useMemo, useState } from 'react'
+import { useOutletContext } from 'react-router-dom'
 import { format } from 'date-fns'
+import { Plus, Search, Trash2 } from 'lucide-react'
 import { useStore } from '../store/useStore'
-import Navbar from '../components/layout/Navbar'
+import Topbar from '../components/layout/Topbar'
 import AddExpenseModal from '../components/expenses/AddExpenseModal'
+import Avatar from '../components/ui/Avatar'
+import { CATEGORIES, categoryMeta } from '../data/seed'
+import { firstName, inr } from '../lib/format'
 
-const CATEGORIES = ['All','Groceries','Utilities','Food','Transport','Entertainment','Others']
+const FILTERS = ['All', ...CATEGORIES.map((c) => c.name)]
 
 export default function Expenses() {
-  const [showModal, setShowModal]   = useState(false)
-  const [filter, setFilter]         = useState('All')
-  const expenses    = useStore((s) => s.expenses)
-  const members     = useStore((s) => s.members)
+  const { onMenu } = useOutletContext() || {}
+  const [showModal, setShowModal] = useState(false)
+  const [filter, setFilter] = useState('All')
+  const [q, setQ] = useState('')
+
+  const expenses = useStore((s) => s.expenses)
+  const members = useStore((s) => s.members)
   const currentUser = useStore((s) => s.currentUser)
   const deleteExpense = useStore((s) => s.deleteExpense)
 
-  const getMember = (id) => members.find((m) => m.id === id)
-  const filtered  = filter === 'All' ? expenses : expenses.filter((e) => e.category === filter)
-  const total     = filtered.reduce((s, e) => s + e.amount, 0)
+  const filtered = useMemo(() => {
+    return expenses.filter((e) => {
+      const okCat = filter === 'All' || e.category === filter
+      const okQ = !q.trim() || e.title.toLowerCase().includes(q.toLowerCase())
+      return okCat && okQ
+    })
+  }, [expenses, filter, q])
+
+  const total = filtered.reduce((s, e) => s + e.amount, 0)
 
   return (
-    <div style={{ flex: 1, overflow: 'auto' }}>
-      <Navbar
-        title="Expenses"
-        subtitle={`${filtered.length} entries · ₹${total.toLocaleString('en-IN')} total`}
+    <div>
+      <Topbar
+        onMenu={onMenu}
+        kicker="Shared money"
+        title="The ledger"
         action={
-          <button className="btn-primary" onClick={() => setShowModal(true)}>
-            <Plus size={15} /> Add Expense
+          <button className="btn-primary !py-2" onClick={() => setShowModal(true)}>
+            <Plus size={15} /> Log expense
           </button>
         }
       />
 
-      <div style={{ padding: '24px 28px' }}>
-        {/* Category filter pills */}
-        <div style={{ display: 'flex', gap: 8, marginBottom: 20, flexWrap: 'wrap' }}>
-          {CATEGORIES.map((c) => (
-            <button key={c} onClick={() => setFilter(c)} style={{
-              padding: '7px 16px', borderRadius: 99,
-              background: filter === c ? 'var(--accent)' : 'var(--bg-surface)',
-              border: `1px solid ${filter === c ? 'var(--accent)' : 'var(--border)'}`,
-              color: filter === c ? '#fff' : 'var(--text-secondary)',
-              fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font)', transition: 'all 0.15s',
-            }}>
+      <div className="px-4 md:px-8 py-8 max-w-[1180px]">
+        <div className="flex flex-col md:flex-row md:items-center gap-3 mb-6">
+          <div className="relative flex-1 max-w-sm">
+            <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-mist" />
+            <input className="input pl-10" placeholder="Search the house bills…" value={q} onChange={(e) => setQ(e.target.value)} />
+          </div>
+          <p className="text-sm text-stone md:ml-auto">
+            {filtered.length} entries · <span className="font-semibold text-espresso">{inr(total)}</span>
+          </p>
+        </div>
+
+        <div className="flex gap-2 overflow-x-auto pb-4 mb-2">
+          {FILTERS.map((c) => (
+            <button
+              key={c}
+              onClick={() => setFilter(c)}
+              className={`shrink-0 px-4 py-2 rounded-full text-sm font-semibold border transition ${
+                filter === c ? 'bg-espresso text-cream border-espresso' : 'bg-cream border-linen text-stone hover:border-mist'
+              }`}
+            >
               {c}
             </button>
           ))}
         </div>
 
-        {/* Expense list */}
-        <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-          {/* Table header */}
-          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 80px', gap: 12, padding: '12px 20px', borderBottom: '1px solid var(--border)', background: 'var(--bg-elevated)' }}>
-            {['Description','Category','Paid By','Amount',''].map((h, i) => (
-              <span key={i} style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.07em', textAlign: i >= 3 ? 'right' : 'left' }}>{h}</span>
-            ))}
-          </div>
-
+        <div className="card overflow-hidden">
           {filtered.length === 0 ? (
-            <div style={{ padding: '48px', textAlign: 'center', color: 'var(--text-muted)' }}>
-              <p style={{ fontSize: 32, marginBottom: 8 }}>🧾</p>
-              <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-secondary)' }}>No expenses yet</p>
-              <p style={{ fontSize: 13, marginTop: 4 }}>Add your first expense to get started</p>
+            <div className="py-20 text-center">
+              <p className="font-display text-3xl">The ledger is quiet.</p>
+              <p className="text-stone mt-2">Log the first shared bill and the house starts remembering.</p>
             </div>
           ) : (
-            filtered.map((exp, idx) => {
-              const payer   = getMember(exp.paidBy)
-              const isMe    = exp.paidBy === currentUser
-              const share   = Math.round(exp.amount / exp.splitWith.length)
+            filtered.map((exp) => {
+              const payer = members.find((m) => m.id === exp.paidBy)
+              const isMe = exp.paidBy === currentUser
+              const share = Math.round(exp.amount / exp.splitWith.length)
+              const meta = categoryMeta(exp.category)
               return (
-                <div key={exp.id} className="animate-fade-in" style={{
-                  display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr 80px',
-                  gap: 12, padding: '14px 20px',
-                  borderBottom: idx < filtered.length - 1 ? '1px solid var(--border)' : 'none',
-                  alignItems: 'center',
-                  animationDelay: `${idx * 0.04}s`,
-                }}>
-                  {/* Description */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <div style={{ width: 36, height: 36, borderRadius: 9, background: 'var(--bg-elevated)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0 }}>{exp.emoji}</div>
-                    <div>
-                      <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>{exp.title}</p>
-                      <p style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 2 }}>{format(new Date(exp.date), 'dd MMM yyyy')}</p>
-                    </div>
-                  </div>
-                  {/* Category */}
-                  <div><span className="badge badge-blue">{exp.category}</span></div>
-                  {/* Paid by */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
-                    <div className="avatar" style={{ width: 24, height: 24, background: payer?.bg, color: payer?.color, fontSize: 9 }}>{payer?.initials}</div>
-                    <span style={{ fontSize: 13, color: isMe ? 'var(--accent)' : 'var(--text-secondary)', fontWeight: isMe ? 700 : 400 }}>
-                      {isMe ? 'You' : payer?.name.split(' ')[0]}
-                    </span>
-                  </div>
-                  {/* Amount */}
-                  <div style={{ textAlign: 'right' }}>
-                    <p style={{ fontSize: 15, fontWeight: 800, color: 'var(--text-primary)' }}>₹{exp.amount.toLocaleString('en-IN')}</p>
-                    <p style={{ fontSize: 11, color: isMe ? 'var(--accent)' : 'var(--danger)', marginTop: 2 }}>
-                      {isMe ? `You get back ₹${share * (exp.splitWith.length - 1)}` : `You owe ₹${share}`}
+                <div key={exp.id} className="flex items-center gap-4 px-5 py-4 border-b border-linen last:border-0 hover:bg-paper/60">
+                  <div className="w-1 self-stretch rounded-full" style={{ background: meta.color }} />
+                  <div className="w-12 h-12 rounded-2xl bg-paper flex items-center justify-center text-xl shrink-0">{exp.emoji}</div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold truncate">{exp.title}</p>
+                    <p className="text-xs text-stone mt-1">
+                      {format(new Date(exp.date), 'd MMM yyyy')} · {exp.category} · {exp.splitWith.length} people
                     </p>
                   </div>
-                  {/* Delete */}
-                  <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                    <button className="btn-danger" onClick={() => deleteExpense(exp.id)} style={{ padding: '6px 10px' }}>
-                      <Trash2 size={13} />
-                    </button>
+                  <div className="hidden sm:flex items-center gap-2 min-w-[120px]">
+                    <Avatar member={payer} size={28} />
+                    <span className="text-sm text-stone">{isMe ? 'You' : firstName(payer?.name)}</span>
                   </div>
+                  <div className="text-right min-w-[110px]">
+                    <p className="font-bold">{inr(exp.amount)}</p>
+                    <p className={`text-[11px] ${isMe ? 'text-forest' : 'text-clay'}`}>
+                      {isMe ? `Back ${inr(share * (exp.splitWith.length - 1))}` : `You ${inr(share)}`}
+                    </p>
+                  </div>
+                  <button className="btn-danger !px-3 !py-2" onClick={() => deleteExpense(exp.id)}>
+                    <Trash2 size={14} />
+                  </button>
                 </div>
               )
             })

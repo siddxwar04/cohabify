@@ -1,33 +1,52 @@
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts'
+import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
 import { useStore } from '../../store/useStore'
-
-const COLORS = ['#1D9E75','#378ADD','#EF9F27','#7F77DD','#E24B4A']
+import { categoryMeta } from '../../data/seed'
+import { inr } from '../../lib/format'
 
 const CustomTooltip = ({ active, payload }) => {
   if (!active || !payload?.length) return null
   return (
-    <div style={{ background: '#1a2133', border: '1px solid #253047', borderRadius: 9, padding: '10px 14px' }}>
-      <p style={{ fontSize: 12, color: '#8b95a8', marginBottom: 4 }}>{payload[0].payload.name}</p>
-      <p style={{ fontSize: 16, fontWeight: 800, color: '#e8edf5' }}>₹{payload[0].value.toLocaleString('en-IN')}</p>
+    <div className="rounded-2xl bg-espresso text-cream px-3 py-2 shadow-lift">
+      <p className="text-[11px] text-cream/70">{payload[0].name}</p>
+      <p className="font-semibold">{inr(payload[0].value)}</p>
     </div>
   )
 }
 
 export default function SpendingChart() {
   const data = useStore((s) => s.getSpendingByCategory())
+  const total = data.reduce((s, d) => s + d.value, 0)
 
   return (
-    <div style={{ width: '100%', height: 200 }}>
-      <ResponsiveContainer>
-        <BarChart data={data} margin={{ top: 4, right: 4, bottom: 4, left: -20 }}>
-          <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#8b95a8', fontFamily: 'Plus Jakarta Sans' }} axisLine={false} tickLine={false} />
-          <YAxis tick={{ fontSize: 11, fill: '#8b95a8', fontFamily: 'Plus Jakarta Sans' }} axisLine={false} tickLine={false} tickFormatter={(v) => `₹${v/1000}k`} />
-          <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(255,255,255,0.04)' }} />
-          <Bar dataKey="value" radius={[6, 6, 0, 0]} maxBarSize={48}>
-            {data.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
+    <div className="flex items-center gap-4">
+      <div className="relative w-40 h-40 shrink-0">
+        <ResponsiveContainer>
+          <PieChart>
+            <Pie data={data} dataKey="value" nameKey="name" innerRadius={48} outerRadius={70} paddingAngle={3} stroke="none">
+              {data.map((d) => (
+                <Cell key={d.name} fill={categoryMeta(d.name).color} />
+              ))}
+            </Pie>
+            <Tooltip content={<CustomTooltip />} />
+          </PieChart>
+        </ResponsiveContainer>
+        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+          <p className="text-[10px] uppercase tracking-widest text-mist">All time</p>
+          <p className="font-display text-lg leading-none">{inr(total)}</p>
+        </div>
+      </div>
+      <div className="flex-1 space-y-2 min-w-0">
+        {data.slice(0, 5).map((d) => {
+          const meta = categoryMeta(d.name)
+          return (
+            <div key={d.name} className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full shrink-0" style={{ background: meta.color }} />
+              <span className="text-xs text-stone flex-1 truncate">{meta.emoji} {d.name}</span>
+              <span className="text-xs font-semibold text-espresso">{inr(d.value)}</span>
+            </div>
+          )
+        })}
+      </div>
     </div>
   )
 }

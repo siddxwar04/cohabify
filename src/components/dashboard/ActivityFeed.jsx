@@ -1,28 +1,19 @@
-import { formatDistanceToNow } from 'date-fns'
 import { useStore } from '../../store/useStore'
 
 export default function ActivityFeed() {
-  const expenses = useStore((s) => s.expenses)
-  const members  = useStore((s) => s.members)
-  const getMember = (id) => members.find((m) => m.id === id)
+  const activity = useStore((s) => s.activity)
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-      {expenses.slice(0, 5).map((exp) => {
-        const m = getMember(exp.paidBy)
-        return (
-          <div key={exp.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: '1px solid var(--border)' }}>
-            <div style={{ width: 32, height: 32, borderRadius: 8, background: 'var(--bg-elevated)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, flexShrink: 0 }}>{exp.emoji}</div>
-            <div style={{ flex: 1 }}>
-              <p style={{ fontSize: 13, color: 'var(--text-primary)', fontWeight: 500 }}>{exp.title}</p>
-              <p style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>
-                {m?.name.split(' ')[0]} · {formatDistanceToNow(new Date(exp.date), { addSuffix: true })}
-              </p>
-            </div>
-            <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>₹{exp.amount.toLocaleString('en-IN')}</span>
+    <div className="space-y-0">
+      {activity.slice(0, 6).map((item, i) => (
+        <div key={item.id} className={`flex gap-3 py-3 ${i < 5 ? 'border-b border-linen/80' : ''}`}>
+          <span className={`mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 ${item.tone === 'clay' ? 'bg-clay' : 'bg-forest'}`} />
+          <div>
+            <p className="text-sm text-espresso leading-snug">{item.text}</p>
+            <p className="text-[11px] text-mist mt-1">{item.time}</p>
           </div>
-        )
-      })}
+        </div>
+      ))}
     </div>
   )
 }

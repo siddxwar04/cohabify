@@ -1,52 +1,30 @@
-# CoHabify — Co-living, Simplified
+# CoHabify
 
-A modern dark-themed React app for managing shared living expenses, chores, and settlements between flatmates.
+A full working **frontend** for shared living — expenses, housework, and settlements — designed like a hospitality brand, not a spreadsheet.
 
-> **Tagline:** Co-living, simplified.
+No native app. HTML, CSS, JavaScript, React, and frontend libraries. House data lives in the browser (`localStorage`) so everything works without a backend.
 
-## Quick Start
+## Run it
 
 ```bash
-# 1. Install dependencies
 npm install
-
-# 2. Start dev server
 npm run dev
-
-# 3. Open in browser
-http://localhost:5173
 ```
 
-## Tech Stack
-- **React 18** + Vite
-- **Zustand** — state management (with localStorage persistence)
-- **React Router v6** — page routing
-- **Recharts** — spending charts
-- **Lucide React** — icons
-- **date-fns** — date formatting
-- **Tailwind CSS** — utility classes
-- **Plus Jakarta Sans** — font (Google Fonts)
+Open [http://localhost:5173](http://localhost:5173)
 
-## Features
-- Dashboard with stats, recent expenses, chore preview, settle-up summary
-- Expenses page with category filter, add/delete, smart per-person split
-- Chores page with toggle done, rotation, per-member progress
-- Settlement page using minimum-transaction algorithm
-- Members page with individual balances and stats
-- All data persists in localStorage
+## What’s inside
 
-## Project Structure
-```
-src/
-  components/
-    layout/       Sidebar, Navbar
-    expenses/     AddExpenseModal
-    dashboard/    SpendingChart, ActivityFeed
-  pages/          Dashboard, Expenses, Chores, Settlement, Members
-  store/          useStore.js (Zustand)
-```
+- **Marketing site** — editorial landing page
+- **Sign in** — pick a flatmate and view the house as them
+- **Home** — balances, ledger, chores, spending mix, fairness radar
+- **Ledger** — search, filter, add, delete shared bills
+- **Housework** — weekly board, rotate assignments
+- **Pulse** — who’s home, mood, quiet hours, guests, kitchen note, coming-due bills
+- **Pantry** — shared shopping list that checks out as a grocery expense
+- **Settle up** — fewest payments, kind nudges, mark as paid
+- **Household** — add / remove flatmates
 
-## Team Split
-- **Person 1** → Expenses: AddExpenseModal, Expenses page, store expense logic
-- **Person 2** → Chores: Chores page, rotation algorithm, chore store logic
-- **Person 3** → Dashboard + Layout: Sidebar, Navbar, Dashboard page, SpendingChart
+## Stack
+
+React 18 · Vite · Tailwind · Zustand (persist) · React Router · Recharts · Framer Motion · Lucide · date-fns

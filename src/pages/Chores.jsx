@@ -1,65 +1,70 @@
 import { useState } from 'react'
-import { Plus, RotateCcw, CheckCircle2 } from 'lucide-react'
+import { useOutletContext } from 'react-router-dom'
+import { Plus, RotateCcw, Trash2 } from 'lucide-react'
 import { useStore } from '../store/useStore'
-import Navbar from '../components/layout/Navbar'
+import Topbar from '../components/layout/Topbar'
+import Modal from '../components/ui/Modal'
+import Avatar from '../components/ui/Avatar'
+import { firstName } from '../lib/format'
 
-const DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
+const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
 export default function Chores() {
-  const [showAdd, setShowAdd]   = useState(false)
-  const [newTitle, setNewTitle] = useState('')
-  const [newAssignee, setNewAssignee] = useState('')
-  const [newDay, setNewDay]     = useState('Mon')
+  const { onMenu } = useOutletContext() || {}
+  const [showAdd, setShowAdd] = useState(false)
+  const [title, setTitle] = useState('')
+  const [assignee, setAssignee] = useState('')
+  const [day, setDay] = useState('Mon')
 
-  const chores      = useStore((s) => s.chores)
-  const members     = useStore((s) => s.members)
+  const chores = useStore((s) => s.chores)
+  const members = useStore((s) => s.members)
   const toggleChore = useStore((s) => s.toggleChore)
-  const addChore    = useStore((s) => s.addChore)
-  const rotateChores= useStore((s) => s.rotateChores)
-
-  const getMember = (id) => members.find((m) => m.id === id)
-  const doneCount = chores.filter((c) => c.done).length
+  const addChore = useStore((s) => s.addChore)
+  const rotateChores = useStore((s) => s.rotateChores)
+  const deleteChore = useStore((s) => s.deleteChore)
+  const done = chores.filter((c) => c.done).length
 
   const handleAdd = () => {
-    if (!newTitle.trim()) return
-    addChore({ title: newTitle, assignedTo: newAssignee || members[0].id, dueDay: newDay })
-    setNewTitle(''); setShowAdd(false)
+    if (!title.trim()) return
+    addChore({ title, assignedTo: assignee || members[0]?.id, dueDay: day })
+    setTitle('')
+    setShowAdd(false)
   }
 
   return (
-    <div style={{ flex: 1, overflow: 'auto' }}>
-      <Navbar
-        title="Chores"
-        subtitle={`${doneCount}/${chores.length} completed this week`}
+    <div>
+      <Topbar
+        onMenu={onMenu}
+        kicker="This week"
+        title="Housework"
         action={
-          <div style={{ display: 'flex', gap: 8 }}>
-            <button className="btn-ghost" onClick={rotateChores} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <div className="flex gap-2">
+            <button className="btn-ghost !py-2" onClick={rotateChores}>
               <RotateCcw size={14} /> Rotate
             </button>
-            <button className="btn-primary" onClick={() => setShowAdd(true)}>
-              <Plus size={15} /> Add Chore
+            <button className="btn-primary !py-2" onClick={() => setShowAdd(true)}>
+              <Plus size={15} /> Add chore
             </button>
           </div>
         }
       />
 
-      <div style={{ padding: '24px 28px' }}>
-        {/* Progress overview */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14, marginBottom: 24 }}>
+      <div className="px-4 md:px-8 py-8 max-w-[1180px]">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
           {members.map((m) => {
-            const myChores  = chores.filter((c) => c.assignedTo === m.id)
-            const myDone    = myChores.filter((c) => c.done).length
-            const pct       = myChores.length ? Math.round((myDone / myChores.length) * 100) : 0
+            const mine = chores.filter((c) => c.assignedTo === m.id)
+            const mineDone = mine.filter((c) => c.done).length
+            const pct = mine.length ? Math.round((mineDone / mine.length) * 100) : 0
             return (
-              <div key={m.id} className="card animate-fade-in" style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                <div className="avatar" style={{ width: 44, height: 44, background: m.bg, color: m.color, fontSize: 14 }}>{m.initials}</div>
-                <div style={{ flex: 1 }}>
-                  <p style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>{m.name.split(' ')[0]}</p>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 6 }}>
-                    <div style={{ flex: 1, height: 5, background: 'var(--border)', borderRadius: 99, overflow: 'hidden' }}>
-                      <div style={{ width: `${pct}%`, height: '100%', background: m.color, borderRadius: 99, transition: 'width 0.4s' }} />
+              <div key={m.id} className="card p-4 flex items-center gap-3">
+                <Avatar member={m} size={44} />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold truncate">{firstName(m.name)}</p>
+                  <div className="flex items-center gap-2 mt-2">
+                    <div className="flex-1 h-1.5 rounded-full bg-linen overflow-hidden">
+                      <div className="h-full rounded-full" style={{ width: `${pct}%`, background: m.color }} />
                     </div>
-                    <span style={{ fontSize: 12, fontWeight: 700, color: m.color }}>{myDone}/{myChores.length}</span>
+                    <span className="text-xs font-bold" style={{ color: m.color }}>{mineDone}/{mine.length}</span>
                   </div>
                 </div>
               </div>
@@ -67,96 +72,80 @@ export default function Chores() {
           })}
         </div>
 
-        {/* Chore board */}
-        <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-          <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)', background: 'var(--bg-elevated)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <h3 style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)' }}>This Week's Chores</h3>
-            <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{chores.length - doneCount} remaining</span>
+        <div className="flex items-end justify-between mb-4">
+          <div>
+            <h3 className="font-display text-3xl">Weekly board</h3>
+            <p className="text-sm text-stone mt-1">{chores.length - done} still open · tap a card to complete</p>
           </div>
+        </div>
 
-          {chores.map((chore, idx) => {
-            const m = getMember(chore.assignedTo)
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
+          {DAYS.map((d) => {
+            const items = chores.filter((c) => c.dueDay === d)
             return (
-              <div key={chore.id} className="animate-fade-in" style={{
-                display: 'flex', alignItems: 'center', gap: 14,
-                padding: '14px 20px',
-                borderBottom: idx < chores.length - 1 ? '1px solid var(--border)' : 'none',
-                background: chore.done ? 'rgba(29,158,117,0.03)' : 'transparent',
-                animationDelay: `${idx * 0.05}s`,
-                transition: 'background 0.2s',
-              }}>
-                <button
-                  onClick={() => toggleChore(chore.id)}
-                  style={{
-                    width: 22, height: 22, borderRadius: 7, flexShrink: 0,
-                    border: `1.5px solid ${chore.done ? 'var(--accent)' : 'var(--border-light)'}`,
-                    background: chore.done ? 'var(--accent)' : 'transparent',
-                    cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    transition: 'all 0.15s',
-                  }}
-                >
-                  {chore.done && <svg width="11" height="11" viewBox="0 0 12 12"><path d="M2 6l3 3 5-5" stroke="#fff" strokeWidth="1.8" fill="none" strokeLinecap="round" strokeLinejoin="round"/></svg>}
-                </button>
-
-                <div style={{ flex: 1 }}>
-                  <p style={{ fontSize: 14, fontWeight: 600, color: chore.done ? 'var(--text-muted)' : 'var(--text-primary)', textDecoration: chore.done ? 'line-through' : 'none', transition: 'all 0.2s' }}>{chore.title}</p>
+              <div key={d} className="rounded-3xl bg-linen/40 border border-linen p-3 min-h-[180px]">
+                <p className="text-[11px] uppercase tracking-[0.16em] text-mist font-semibold mb-3">{d}</p>
+                <div className="space-y-2">
+                  {items.map((chore) => {
+                    const m = members.find((x) => x.id === chore.assignedTo)
+                    return (
+                      <div
+                        key={chore.id}
+                        className={`rounded-2xl p-3 bg-cream border shadow-sm ${chore.done ? 'border-forest/30 opacity-70' : 'border-linen'}`}
+                      >
+                        <button onClick={() => toggleChore(chore.id)} className="text-left w-full">
+                          <p className={`text-sm font-semibold leading-snug ${chore.done ? 'line-through text-mist' : ''}`}>{chore.title}</p>
+                        </button>
+                        <div className="flex items-center justify-between mt-3">
+                          <Avatar member={m} size={22} />
+                          <button onClick={() => deleteChore(chore.id)} className="text-mist hover:text-red-700">
+                            <Trash2 size={12} />
+                          </button>
+                        </div>
+                      </div>
+                    )
+                  })}
                 </div>
-
-                <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', background: 'var(--bg-elevated)', padding: '3px 9px', borderRadius: 99, flexShrink: 0 }}>{chore.dueDay}</span>
-
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-                  <div className="avatar" style={{ width: 28, height: 28, background: m?.bg, color: m?.color, fontSize: 10 }}>{m?.initials}</div>
-                  <span style={{ fontSize: 13, color: 'var(--text-secondary)', fontWeight: 500 }}>{m?.name.split(' ')[0]}</span>
-                </div>
-
-                {chore.done && <span className="badge badge-green">Done</span>}
               </div>
             )
           })}
         </div>
       </div>
 
-      {/* Add chore modal */}
       {showAdd && (
-        <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && setShowAdd(false)}>
-          <div className="modal">
-            <h2 style={{ fontSize: 18, fontWeight: 800, color: 'var(--text-primary)', marginBottom: 20 }}>New Chore</h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-              <div>
-                <label style={labelStyle}>Chore Name</label>
-                <input className="input" placeholder="e.g. Clean bathroom" value={newTitle} onChange={(e) => setNewTitle(e.target.value)} autoFocus />
-              </div>
-              <div>
-                <label style={labelStyle}>Assign to</label>
-                <select className="input" value={newAssignee || members[0].id} onChange={(e) => setNewAssignee(e.target.value)}>
-                  {members.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
-                </select>
-              </div>
-              <div>
-                <label style={labelStyle}>Due Day</label>
-                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                  {DAYS.map((d) => (
-                    <button key={d} onClick={() => setNewDay(d)} style={{
-                      padding: '6px 12px', borderRadius: 7, cursor: 'pointer', fontFamily: 'var(--font)',
-                      fontSize: 12, fontWeight: 700,
-                      background: newDay === d ? 'var(--accent)' : 'var(--bg-elevated)',
-                      color: newDay === d ? '#fff' : 'var(--text-secondary)',
-                      border: `1px solid ${newDay === d ? 'var(--accent)' : 'var(--border-light)'}`,
-                      transition: 'all 0.15s',
-                    }}>{d}</button>
-                  ))}
-                </div>
+        <Modal title="New chore" subtitle="Assign it to a day and a person." onClose={() => setShowAdd(false)}>
+          <div className="space-y-4">
+            <div>
+              <label className="text-[11px] uppercase tracking-[0.14em] text-mist font-semibold">Chore</label>
+              <input className="input mt-1.5" placeholder="Clean the balcony…" value={title} onChange={(e) => setTitle(e.target.value)} autoFocus />
+            </div>
+            <div>
+              <label className="text-[11px] uppercase tracking-[0.14em] text-mist font-semibold">Assign to</label>
+              <select className="input mt-1.5" value={assignee || members[0]?.id} onChange={(e) => setAssignee(e.target.value)}>
+                {members.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="text-[11px] uppercase tracking-[0.14em] text-mist font-semibold">Due day</label>
+              <div className="flex flex-wrap gap-2 mt-2">
+                {DAYS.map((d) => (
+                  <button
+                    key={d}
+                    onClick={() => setDay(d)}
+                    className={`px-3 py-1.5 rounded-full text-xs font-bold border ${day === d ? 'bg-espresso text-cream border-espresso' : 'bg-paper border-linen text-stone'}`}
+                  >
+                    {d}
+                  </button>
+                ))}
               </div>
             </div>
-            <div style={{ display: 'flex', gap: 10, marginTop: 24 }}>
-              <button className="btn-ghost" style={{ flex: 1 }} onClick={() => setShowAdd(false)}>Cancel</button>
-              <button className="btn-primary" style={{ flex: 2 }} onClick={handleAdd}><Plus size={15} /> Add Chore</button>
+            <div className="flex gap-2 pt-2">
+              <button className="btn-ghost flex-1" onClick={() => setShowAdd(false)}>Cancel</button>
+              <button className="btn-primary flex-[2]" onClick={handleAdd}><Plus size={15} /> Add to board</button>
             </div>
           </div>
-        </div>
+        </Modal>
       )}
     </div>
   )
 }
-
-const labelStyle = { display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.06em' }
