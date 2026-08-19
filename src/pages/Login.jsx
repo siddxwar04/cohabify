@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { ArrowRight, Home } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { ArrowRight } from 'lucide-react'
 import { HOUSE } from '../data/seed'
 import { useStore } from '../store/useStore'
+import BrandLink from '../components/layout/BrandLink'
 
 export default function Login() {
   const navigate = useNavigate()
@@ -27,12 +28,7 @@ export default function Login() {
       </div>
 
       <div className="flex flex-col justify-center px-8 py-16 bg-paper">
-        <Link to="/" className="flex items-center gap-2 text-espresso no-underline mb-12 w-fit">
-          <span className="w-8 h-8 rounded-xl bg-forest text-cream flex items-center justify-center">
-            <Home size={15} />
-          </span>
-          <span className="font-display text-2xl">CoHabify</span>
-        </Link>
+        <BrandLink className="mb-12" />
 
         <h1 className="font-display text-4xl md:text-5xl leading-tight">Step inside.</h1>
         <p className="text-stone mt-3 max-w-sm">

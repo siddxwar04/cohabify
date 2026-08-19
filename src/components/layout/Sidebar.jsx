@@ -5,7 +5,6 @@ import {
   CheckSquare,
   ArrowLeftRight,
   Users,
-  Home,
   LogOut,
   Menu,
   X,
@@ -15,6 +14,7 @@ import {
 import { useStore } from '../../store/useStore'
 import { HOUSE } from '../../data/seed'
 import Avatar from '../ui/Avatar'
+import BrandLink from './BrandLink'
 
 const NAV = [
   { to: '/app', icon: LayoutDashboard, label: 'Home', end: true },
@@ -35,17 +35,7 @@ export default function Sidebar({ open, onClose }) {
   const body = (
     <>
       <div className="px-5 pt-6 pb-4">
-        <NavLink to="/" className="flex items-center gap-2.5 no-underline">
-          <div className="w-9 h-9 rounded-2xl bg-forest text-cream flex items-center justify-center shadow-card">
-            <Home size={16} />
-          </div>
-          <div>
-            <p className="font-display text-[22px] leading-none text-espresso">
-              CoHab<span className="italic text-forest">ify</span>
-            </p>
-            <p className="text-[10px] uppercase tracking-[0.18em] text-mist mt-1">Casa Verde</p>
-          </div>
-        </NavLink>
+        <BrandLink onClick={onClose} subtitle="Casa Verde" />
       </div>
 
       <div className="px-4 mb-5">

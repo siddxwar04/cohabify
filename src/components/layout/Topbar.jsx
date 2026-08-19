@@ -3,6 +3,7 @@ import { Bell, ChevronDown } from 'lucide-react'
 import { useStore } from '../../store/useStore'
 import Avatar from '../ui/Avatar'
 import { MenuButton } from './Sidebar'
+import BrandLink from './BrandLink'
 
 export default function Topbar({ title, kicker, action, onMenu }) {
   const members = useStore((s) => s.members)
@@ -20,6 +21,7 @@ export default function Topbar({ title, kicker, action, onMenu }) {
     <header className="sticky top-0 z-20 px-4 md:px-8 py-5 flex items-center justify-between gap-4 bg-paper/80 backdrop-blur-xl border-b border-linen/70">
       <div className="flex items-center gap-3 min-w-0">
         <MenuButton onClick={onMenu} />
+        <BrandLink markOnly className="lg:hidden" />
         <div className="min-w-0">
           {kicker && (
             <p className="text-[11px] uppercase tracking-[0.18em] text-mist mb-1">{kicker}</p>

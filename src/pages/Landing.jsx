@@ -3,7 +3,6 @@ import { motion } from 'framer-motion'
 import {
   ArrowRight,
   CheckCircle2,
-  Home,
   Radio,
   Receipt,
   Scale,
@@ -12,6 +11,7 @@ import {
   Wallet,
 } from 'lucide-react'
 import { HOUSE } from '../data/seed'
+import BrandLink from '../components/layout/BrandLink'
 
 const fade = {
   hidden: { opacity: 0, y: 28 },
@@ -38,14 +38,7 @@ export default function Landing() {
     <div className="min-h-screen bg-paper text-espresso">
       <nav className="sticky top-0 z-30 border-b border-linen/70 bg-paper/80 backdrop-blur-xl">
         <div className="max-w-6xl mx-auto px-5 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2 no-underline text-espresso">
-            <span className="w-8 h-8 rounded-xl bg-forest text-cream flex items-center justify-center">
-              <Home size={15} />
-            </span>
-            <span className="font-display text-2xl">
-              CoHab<span className="italic text-forest">ify</span>
-            </span>
-          </Link>
+          <BrandLink />
           <div className="hidden md:flex items-center gap-8 text-sm text-stone">
             <a href="#features" className="hover:text-espresso">Product</a>
             <a href="#ritual" className="hover:text-espresso">The ritual</a>
