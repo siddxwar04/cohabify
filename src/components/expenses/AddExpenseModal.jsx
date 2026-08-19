@@ -75,7 +75,7 @@ export default function AddExpenseModal({ onClose }) {
                 onClick={() => setCategory(c.name)}
                 className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition ${
                   category === c.name
-                    ? 'bg-espresso text-cream border-espresso'
+                    ? 'bg-night text-day border-night'
                     : 'bg-paper border-linen text-stone hover:border-mist'
                 }`}
               >

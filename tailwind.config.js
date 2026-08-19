@@ -1,34 +1,37 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: 'class',
   content: ['./index.html', './src/**/*.{js,jsx}'],
   theme: {
     extend: {
       colors: {
-        paper: '#F3EEE4',
-        cream: '#FBF7F0',
-        linen: '#E9E1D4',
-        espresso: '#1C1917',
-        bark: '#3F3832',
-        stone: '#6F675E',
-        mist: '#A39B90',
+        paper: 'rgb(var(--c-paper) / <alpha-value>)',
+        cream: 'rgb(var(--c-cream) / <alpha-value>)',
+        linen: 'rgb(var(--c-linen) / <alpha-value>)',
+        espresso: 'rgb(var(--c-espresso) / <alpha-value>)',
+        bark: 'rgb(var(--c-bark) / <alpha-value>)',
+        stone: 'rgb(var(--c-stone) / <alpha-value>)',
+        mist: 'rgb(var(--c-mist) / <alpha-value>)',
         forest: {
-          DEFAULT: '#1F6B4A',
-          dim: '#16553A',
-          soft: '#E6F3EC',
+          DEFAULT: 'rgb(var(--c-forest) / <alpha-value>)',
+          dim: 'rgb(var(--c-forest-dim) / <alpha-value>)',
+          soft: 'rgb(var(--c-forest-soft) / <alpha-value>)',
         },
         clay: {
-          DEFAULT: '#C45D26',
-          soft: '#F8E8DC',
+          DEFAULT: 'rgb(var(--c-clay) / <alpha-value>)',
+          soft: 'rgb(var(--c-clay-soft) / <alpha-value>)',
         },
-        champagne: '#C4A574',
+        champagne: 'rgb(var(--c-champagne) / <alpha-value>)',
+        night: 'rgb(var(--c-night) / <alpha-value>)',
+        day: 'rgb(var(--c-day) / <alpha-value>)',
       },
       fontFamily: {
         display: ['Instrument Serif', 'Georgia', 'serif'],
         sans: ['Outfit', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
-        card: '0 1px 1px rgba(28,25,23,0.04), 0 18px 40px -18px rgba(28,25,23,0.18)',
-        lift: '0 24px 50px -20px rgba(28,25,23,0.22)',
+        card: 'var(--shadow-card)',
+        lift: 'var(--shadow-lift)',
         inset: 'inset 0 1px 0 rgba(255,255,255,0.7)',
       },
       borderRadius: {

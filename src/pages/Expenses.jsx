@@ -62,7 +62,7 @@ export default function Expenses() {
               key={c}
               onClick={() => setFilter(c)}
               className={`shrink-0 px-4 py-2 rounded-full text-sm font-semibold border transition ${
-                filter === c ? 'bg-espresso text-cream border-espresso' : 'bg-cream border-linen text-stone hover:border-mist'
+                filter === c ? 'bg-night text-day border-night' : 'bg-cream border-linen text-stone hover:border-mist'
               }`}
             >
               {c}

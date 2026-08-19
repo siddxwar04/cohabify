@@ -4,6 +4,7 @@ import { useStore } from '../../store/useStore'
 import Avatar from '../ui/Avatar'
 import { MenuButton } from './Sidebar'
 import BrandLink from './BrandLink'
+import ThemeToggle from '../ui/ThemeToggle'
 
 export default function Topbar({ title, kicker, action, onMenu }) {
   const members = useStore((s) => s.members)
@@ -33,6 +34,8 @@ export default function Topbar({ title, kicker, action, onMenu }) {
       <div className="flex items-center gap-2 md:gap-3">
         {action}
 
+        <ThemeToggle />
+
         <div className="relative">
           <button
             onClick={() => { setNotes((v) => !v); setSwitcher(false); if (!notes) markNotificationsRead() }}
@@ -40,7 +43,7 @@ export default function Topbar({ title, kicker, action, onMenu }) {
           >
             <Bell size={16} />
             {unread > 0 && (
-              <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 rounded-full bg-clay text-cream text-[10px] font-bold flex items-center justify-center">
+              <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 rounded-full bg-clay text-day text-[10px] font-bold flex items-center justify-center">
                 {unread}
               </span>
             )}

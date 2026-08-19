@@ -30,7 +30,7 @@ function HouseLayout() {
         <Outlet context={{ onMenu: () => setOpen(true) }} />
       </main>
       {toast && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 rounded-full bg-espresso text-cream px-5 py-2.5 text-sm shadow-lift">
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 rounded-full bg-night text-day px-5 py-2.5 text-sm shadow-lift">
           {toast}
         </div>
       )}

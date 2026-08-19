@@ -41,11 +41,11 @@ export default function Sidebar({ open, onClose }) {
       <div className="px-4 mb-5">
         <div className="relative overflow-hidden rounded-3xl border border-linen shadow-card">
           <img src={HOUSE.photo} alt={HOUSE.name} className="h-28 w-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-espresso/80 via-espresso/20 to-transparent" />
-          <div className="absolute bottom-3 left-3 right-3 text-cream">
-            <p className="text-[10px] uppercase tracking-[0.16em] text-cream/70">Your home</p>
+          <div className="absolute inset-0 bg-gradient-to-t from-night/80 via-night/20 to-transparent" />
+          <div className="absolute bottom-3 left-3 right-3 text-day">
+            <p className="text-[10px] uppercase tracking-[0.16em] text-day/70">Your home</p>
             <p className="font-display text-xl leading-none mt-0.5">{HOUSE.name}</p>
-            <p className="text-[11px] mt-1 text-cream/80">{HOUSE.unit} · {HOUSE.city}</p>
+            <p className="text-[11px] mt-1 text-day/80">{HOUSE.unit} · {HOUSE.city}</p>
           </div>
         </div>
       </div>
@@ -60,8 +60,8 @@ export default function Sidebar({ open, onClose }) {
             className={({ isActive }) =>
               `flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-sm font-medium no-underline transition ${
                 isActive
-                  ? 'bg-espresso text-cream shadow-card'
-                  : 'text-stone hover:bg-linen/70 hover:text-espresso'
+                  ? 'bg-night text-day shadow-card dark:bg-forest-soft dark:text-day dark:shadow-none'
+                  : 'text-stone hover:bg-linen/70 hover:text-espresso dark:hover:bg-white/[0.04]'
               }`
             }
           >
@@ -113,7 +113,7 @@ export default function Sidebar({ open, onClose }) {
 
       {open && (
         <div className="lg:hidden fixed inset-0 z-40">
-          <div className="absolute inset-0 bg-espresso/40" onClick={onClose} />
+          <div className="absolute inset-0 bg-night/40" onClick={onClose} />
           <aside className="relative w-[280px] h-full bg-cream flex flex-col shadow-lift">
             <button onClick={onClose} className="absolute top-4 right-4 w-8 h-8 rounded-full bg-paper border border-linen flex items-center justify-center">
               <X size={14} />

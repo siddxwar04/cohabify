@@ -56,7 +56,7 @@ export default function Pulse() {
 
       <div className="px-4 md:px-8 py-8 max-w-[1180px] space-y-5">
         {quiet && (
-          <div className="rounded-3xl bg-espresso text-cream px-5 py-4 flex items-center gap-3">
+          <div className="rounded-3xl bg-night text-day px-5 py-4 flex items-center gap-3">
             <Moon size={18} className="text-champagne" />
             <p className="text-sm">
               Quiet hours are on — {formatHour(quietHours.start)} to {formatHour(quietHours.end)}. Keep voices and speakers low.
@@ -93,7 +93,7 @@ export default function Pulse() {
                           <button
                             key={key}
                             onClick={() => setVibe(m.id, key)}
-                            className={`flex-1 text-xs rounded-full py-1.5 border ${vibe === key ? 'bg-espresso text-cream border-espresso' : 'bg-cream border-linen text-stone'}`}
+                            className={`flex-1 text-xs rounded-full py-1.5 border ${vibe === key ? 'bg-night text-day border-night' : 'bg-cream border-linen text-stone'}`}
                           >
                             {v.emoji} {v.label}
                           </button>

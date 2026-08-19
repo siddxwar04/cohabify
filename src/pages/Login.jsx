@@ -4,6 +4,7 @@ import { ArrowRight } from 'lucide-react'
 import { HOUSE } from '../data/seed'
 import { useStore } from '../store/useStore'
 import BrandLink from '../components/layout/BrandLink'
+import ThemeToggle from '../components/ui/ThemeToggle'
 
 export default function Login() {
   const navigate = useNavigate()
@@ -20,15 +21,18 @@ export default function Login() {
     <div className="min-h-screen grid lg:grid-cols-2">
       <div className="relative hidden lg:block">
         <img src={HOUSE.hero} alt="" className="absolute inset-0 w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-espresso/45" />
-        <div className="absolute bottom-10 left-10 right-10 text-cream">
-          <p className="text-[11px] uppercase tracking-[0.2em] text-cream/70">Welcome back</p>
+        <div className="absolute inset-0 bg-night/45" />
+        <div className="absolute bottom-10 left-10 right-10 text-day">
+          <p className="text-[11px] uppercase tracking-[0.2em] text-day/70">Welcome back</p>
           <h2 className="font-display text-5xl mt-2 leading-tight">The keys to {HOUSE.name}.</h2>
         </div>
       </div>
 
       <div className="flex flex-col justify-center px-8 py-16 bg-paper">
-        <BrandLink className="mb-12" />
+        <div className="flex items-center justify-between max-w-md mb-12">
+          <BrandLink />
+          <ThemeToggle />
+        </div>
 
         <h1 className="font-display text-4xl md:text-5xl leading-tight">Step inside.</h1>
         <p className="text-stone mt-3 max-w-sm">

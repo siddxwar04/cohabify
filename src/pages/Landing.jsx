@@ -12,6 +12,7 @@ import {
 } from 'lucide-react'
 import { HOUSE } from '../data/seed'
 import BrandLink from '../components/layout/BrandLink'
+import ThemeToggle from '../components/ui/ThemeToggle'
 
 const fade = {
   hidden: { opacity: 0, y: 28 },
@@ -40,11 +41,12 @@ export default function Landing() {
         <div className="max-w-6xl mx-auto px-5 h-16 flex items-center justify-between">
           <BrandLink />
           <div className="hidden md:flex items-center gap-8 text-sm text-stone">
-            <a href="#features" className="hover:text-espresso">Product</a>
-            <a href="#ritual" className="hover:text-espresso">The ritual</a>
-            <a href="#stories" className="hover:text-espresso">Houses</a>
+            <a href="#features" className="nav-link hover:text-espresso">Product</a>
+            <a href="#ritual" className="nav-link hover:text-espresso">The ritual</a>
+            <a href="#stories" className="nav-link hover:text-espresso">Houses</a>
           </div>
           <div className="flex items-center gap-2">
+            <ThemeToggle />
             <Link to="/login" className="btn-ghost !py-2 !px-4">Sign in</Link>
             <Link to="/app" className="btn-primary !py-2">Enter the house</Link>
           </div>
@@ -90,21 +92,21 @@ export default function Landing() {
             transition={{ delay: 0.15, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
             className="relative"
           >
-            <div className="relative rounded-[32px] overflow-hidden shadow-lift border border-white/50">
-              <img src={HOUSE.hero} alt="A well-kept shared home" className="w-full h-[420px] object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-espresso/70 via-transparent to-transparent" />
-              <div className="absolute bottom-5 left-5 right-5 text-cream">
+            <div className="hero-photo relative rounded-[32px] overflow-hidden shadow-lift border border-white/50">
+              <img src={HOUSE.hero} alt="A well-kept shared home" className="w-full h-[280px] sm:h-[360px] lg:h-[420px] object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-night/70 via-transparent to-transparent" />
+              <div className="absolute bottom-5 left-5 right-5 text-day">
                 <p className="font-display text-3xl">{HOUSE.name}</p>
-                <p className="text-sm text-cream/80 mt-1">{HOUSE.unit} · {HOUSE.address}</p>
+                <p className="text-sm text-day/80 mt-1">{HOUSE.unit} · {HOUSE.address}</p>
               </div>
             </div>
 
-            <div className="absolute -left-6 top-10 card p-4 w-48 hidden sm:block">
+            <div className="float-card card p-4 w-48 hidden sm:block absolute -left-6 top-10">
               <p className="text-[10px] uppercase tracking-widest text-mist">You are owed</p>
               <p className="font-display text-3xl text-forest mt-1">₹3,210</p>
               <p className="text-xs text-stone mt-1">Net positive this month</p>
             </div>
-            <div className="absolute -right-4 bottom-16 card p-4 w-52 hidden sm:block">
+            <div className="float-card card p-4 w-52 hidden sm:block absolute -right-4 bottom-16">
               <p className="text-[10px] uppercase tracking-widest text-mist">This week</p>
               <p className="text-sm font-semibold mt-1">2 / 7 chores done</p>
               <div className="mt-2 h-1.5 rounded-full bg-linen">
@@ -121,8 +123,8 @@ export default function Landing() {
           Built like SpareRoom met Splitwise in a design studio.
         </h2>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mt-10">
-          {FEATURES.map((f) => (
-            <div key={f.title} className="card p-7 hover:shadow-lift transition">
+          {FEATURES.map((f, i) => (
+            <div key={f.title} className={`card feature-card feature-tone-${i % 3} p-7 hover:shadow-lift transition`}>
               <div className="w-11 h-11 rounded-2xl bg-forest-soft text-forest flex items-center justify-center mb-5">
                 <f.icon size={18} />
               </div>
@@ -133,7 +135,7 @@ export default function Landing() {
         </div>
       </section>
 
-      <section id="ritual" className="bg-espresso text-cream py-20">
+      <section id="ritual" className="bg-night text-day py-20">
         <div className="max-w-6xl mx-auto px-5 grid lg:grid-cols-2 gap-12 items-center">
           <div>
             <p className="text-[11px] uppercase tracking-[0.2em] text-champagne">The ritual</p>
@@ -144,16 +146,16 @@ export default function Landing() {
                   <span className="font-display text-2xl text-champagne w-10">{s.n}</span>
                   <div>
                     <p className="text-lg font-semibold">{s.t}</p>
-                    <p className="text-cream/70 mt-1">{s.d}</p>
+                    <p className="text-day/70 mt-1">{s.d}</p>
                   </div>
                 </div>
               ))}
             </div>
           </div>
-          <div className="rounded-[32px] bg-bark/50 border border-white/10 p-6">
+          <div className="ledger-panel rounded-[32px] bg-bark/50 border border-white/10 p-6">
             <div className="flex items-center gap-2 mb-6">
               <Receipt size={16} className="text-champagne" />
-              <span className="text-sm text-cream/70">Live ledger · August</span>
+              <span className="text-sm text-day/70">Live ledger · August</span>
             </div>
             {[
               ['🥬', 'BigBasket weekly haul', '₹2,840', 'Sid'],
@@ -165,7 +167,7 @@ export default function Landing() {
                 <span className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center text-lg">{e}</span>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium truncate">{t}</p>
-                  <p className="text-xs text-cream/50">Paid by {p}</p>
+                  <p className="text-xs text-day/50">Paid by {p}</p>
                 </div>
                 <p className="font-semibold">{a}</p>
               </div>
@@ -193,8 +195,8 @@ export default function Landing() {
       <section className="px-5 pb-20">
         <div className="max-w-6xl mx-auto rounded-[36px] overflow-hidden relative min-h-[320px] flex items-center">
           <img src={HOUSE.photo} alt="" className="absolute inset-0 w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-espresso/65" />
-          <div className="relative px-8 md:px-16 py-16 text-cream max-w-2xl">
+          <div className="absolute inset-0 bg-night/65" />
+          <div className="relative px-8 md:px-16 py-16 text-day max-w-2xl">
             <h2 className="font-display text-4xl md:text-6xl leading-tight">Come home to a house that’s already sorted.</h2>
             <Link to="/app" className="btn-primary mt-8 inline-flex">
               Enter Casa Verde <ArrowRight size={16} />

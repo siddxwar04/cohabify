@@ -57,26 +57,26 @@ export default function Dashboard() {
 
       <div className="px-4 md:px-8 py-8 max-w-[1180px] space-y-6">
         {quiet && (
-          <button onClick={() => navigate('/app/pulse')} className="w-full text-left rounded-3xl bg-espresso text-cream px-5 py-3.5 text-sm">
+          <button onClick={() => navigate('/app/pulse')} className="w-full text-left rounded-3xl bg-night text-day px-5 py-3.5 text-sm">
             Quiet hours · {formatHour(quietHours.start)}–{formatHour(quietHours.end)}. {homeCount} people home.
           </button>
         )}
         <div className="grid lg:grid-cols-[1.4fr_0.8fr] gap-4">
-          <div className="relative overflow-hidden rounded-[28px] bg-espresso text-cream p-7 md:p-9">
+          <div className="relative overflow-hidden rounded-[28px] bg-night text-day p-7 md:p-9">
             <Sparkles size={18} className="text-champagne mb-4" />
-            <p className="text-[11px] uppercase tracking-[0.18em] text-cream/50">Your position in the house</p>
+            <p className="text-[11px] uppercase tracking-[0.18em] text-day/50">Your position in the house</p>
             <p className="font-display text-5xl md:text-6xl mt-2">
               {myBalance >= 0 ? "You're owed" : 'You owe'}
             </p>
             <p className={`font-display text-5xl md:text-6xl mt-1 ${myBalance >= 0 ? 'text-champagne' : 'text-orange-300'}`}>
               {inr(myBalance)}
             </p>
-            <p className="text-cream/60 mt-4 max-w-md">
+            <p className="text-day/60 mt-4 max-w-md">
               {myBalance >= 0
                 ? 'The house is in your debt this cycle. Settle-up will collect the fewest payments.'
                 : 'A couple of taps on Settle up and you’re even again.'}
             </p>
-            <button onClick={() => navigate('/app/settle')} className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-champagne hover:text-cream">
+            <button onClick={() => navigate('/app/settle')} className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-champagne hover:text-day">
               Open settle up <ArrowRight size={14} />
             </button>
           </div>

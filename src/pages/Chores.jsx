@@ -132,7 +132,7 @@ export default function Chores() {
                   <button
                     key={d}
                     onClick={() => setDay(d)}
-                    className={`px-3 py-1.5 rounded-full text-xs font-bold border ${day === d ? 'bg-espresso text-cream border-espresso' : 'bg-paper border-linen text-stone'}`}
+                    className={`px-3 py-1.5 rounded-full text-xs font-bold border ${day === d ? 'bg-night text-day border-night' : 'bg-paper border-linen text-stone'}`}
                   >
                     {d}
                   </button>

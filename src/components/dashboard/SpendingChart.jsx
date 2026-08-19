@@ -6,8 +6,8 @@ import { inr } from '../../lib/format'
 const CustomTooltip = ({ active, payload }) => {
   if (!active || !payload?.length) return null
   return (
-    <div className="rounded-2xl bg-espresso text-cream px-3 py-2 shadow-lift">
-      <p className="text-[11px] text-cream/70">{payload[0].name}</p>
+    <div className="rounded-2xl bg-night text-day px-3 py-2 shadow-lift">
+      <p className="text-[11px] text-day/70">{payload[0].name}</p>
       <p className="font-semibold">{inr(payload[0].value)}</p>
     </div>
   )
