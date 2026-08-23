@@ -92,12 +92,14 @@ export default function Landing() {
             transition={{ delay: 0.15, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
             className="relative"
           >
-            <div className="hero-photo relative rounded-[32px] overflow-hidden shadow-lift border border-white/50">
-              <img src={HOUSE.hero} alt="A well-kept shared home" className="w-full h-[280px] sm:h-[360px] lg:h-[420px] object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-night/70 via-transparent to-transparent" />
-              <div className="absolute bottom-5 left-5 right-5 text-day">
-                <p className="font-display text-3xl">{HOUSE.name}</p>
-                <p className="text-sm text-day/80 mt-1">{HOUSE.unit} · {HOUSE.address}</p>
+            <div className="shine-border">
+              <div className="hero-photo relative rounded-[32px] overflow-hidden shadow-lift border border-white/50">
+                <img src={HOUSE.hero} alt="A well-kept shared home" className="w-full h-[280px] sm:h-[360px] lg:h-[420px] object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-t from-night/70 via-transparent to-transparent" />
+                <div className="absolute bottom-5 left-5 right-5 text-day">
+                  <p className="font-display text-3xl">{HOUSE.name}</p>
+                  <p className="text-sm text-day/80 mt-1">{HOUSE.unit} · {HOUSE.address}</p>
+                </div>
               </div>
             </div>
 
